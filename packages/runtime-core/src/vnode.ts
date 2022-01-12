@@ -493,9 +493,10 @@ function _createVNode(
     if (__DEV__ && !type) {
       warn(`Invalid vnode type when creating vnode: ${type}.`)
     }
-    type = Comment
+    type = Comment // type为空或者空的动态组件（v-if=false组件）当作注释节点处理，所以就明白了v-if=false的组件是<!---->的原因
   }
 
+  // 如果组件类型是VNode
   if (isVNode(type)) {
     // createVNode receiving an existing vnode. This happens in cases like
     // <component :is="vnode"/>
@@ -507,12 +508,12 @@ function _createVNode(
     return cloned
   }
 
-  // class component normalization.
+  // class component normalization. class 组件
   if (isClassComponent(type)) {
     type = type.__vccOpts
   }
 
-  // 2.x async/functional component compat
+  // 2.x async/functional component compat 兼容 vue2.x 版本异步/函数式组件
   if (__COMPAT__) {
     type = convertLegacyComponent(type, currentRenderingInstance)
   }
