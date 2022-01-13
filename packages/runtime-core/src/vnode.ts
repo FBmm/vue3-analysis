@@ -481,6 +481,15 @@ export const createVNode = (
   __DEV__ ? createVNodeWithArgsTransform : _createVNode
 ) as typeof _createVNode
 
+/**
+ * VNode 生成函数
+ * @param type
+ * @param props
+ * @param children
+ * @param patchFlag
+ * @param dynamicProps
+ * @param isBlockNode
+ */
 function _createVNode(
   type: VNodeTypes | ClassComponent | typeof NULL_DYNAMIC_COMPONENT,
   props: (Data & VNodeProps) | null = null,
@@ -518,7 +527,7 @@ function _createVNode(
     type = convertLegacyComponent(type, currentRenderingInstance)
   }
 
-  // class & style normalization.
+  // class & style normalization. 标准化样式属性
   if (props) {
     // for reactive or proxy objects, we need to clone it to enable mutation.
     props = guardReactiveProps(props)!
@@ -573,6 +582,10 @@ function _createVNode(
   )
 }
 
+/**
+ * 保护响应式 props 或者内部 props，返回新对象
+ * @param props Data & VNodeProps 表示交叉类型，表示叠加，包含Data和VNodeProps的所有类型特性
+ */
 export function guardReactiveProps(props: (Data & VNodeProps) | null) {
   if (!props) return null
   return isProxy(props) || InternalObjectKey in props
