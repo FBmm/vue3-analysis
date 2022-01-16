@@ -24,6 +24,11 @@ declare module '@vue/reactivity' {
   }
 }
 
+/**
+ * createRenderer 函数参数
+ * 1. nodeOps 跟平台有关的dom操作
+ * 2. patchProp el 不同属性 patch 的实现方法
+ */
 const rendererOptions = extend({ patchProp }, nodeOps)
 
 // lazy create the renderer - this makes core renderer logic tree-shakable
@@ -32,6 +37,10 @@ let renderer: Renderer<Element | ShadowRoot> | HydrationRenderer
 
 let enabledHydration = false
 
+/**
+ * 初始化 renderer
+ * 只初始化一次
+ */
 function ensureRenderer() {
   return (
     renderer ||
@@ -56,7 +65,11 @@ export const hydrate = ((...args) => {
   ensureHydrationRenderer().hydrate(...args)
 }) as RootHydrateFunction
 
+/**
+ * vue createApp 方法：创建提供应用上下文的vue实例
+ */
 export const createApp = ((...args) => {
+  // 创建 vue app
   const app = ensureRenderer().createApp(...args)
 
   if (__DEV__) {
@@ -65,6 +78,8 @@ export const createApp = ((...args) => {
   }
 
   const { mount } = app
+  // 重写 app.mount 方法
+  // 兼容处理 containerOrSelector 为 （Element | ShadowRoot | string）其中之一类型
   app.mount = (containerOrSelector: Element | ShadowRoot | string): any => {
     const container = normalizeContainer(containerOrSelector)
     if (!container) return
@@ -98,6 +113,7 @@ export const createApp = ((...args) => {
       container.removeAttribute('v-cloak')
       container.setAttribute('data-v-app', '')
     }
+    // mount 方法返回值 注：不是 vue app
     return proxy
   }
 
@@ -170,6 +186,12 @@ function injectCompilerOptionsCheck(app: App) {
   }
 }
 
+/**
+ * 标准化 container
+ * 只考虑 container 是 querySelector 、 dom 节点 或者 ShadowRoot 情况
+ * 如：'#app'、'.app'、'document.getElementById('app')'
+ * @param container
+ */
 function normalizeContainer(
   container: Element | ShadowRoot | string
 ): Element | null {

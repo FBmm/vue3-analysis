@@ -6,6 +6,8 @@ import { getGlobalThis } from '@vue/shared'
  * importing runtime-core is side-effects free.
  *
  * istanbul-ignore-next
+ *
+ * 仅在 esm bundler 构建调用。renderer 被创建时调用以便导入的 runtime-core 没有副作用
  */
 export function initFeatureFlags() {
   let needWarn = false

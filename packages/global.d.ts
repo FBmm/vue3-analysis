@@ -8,7 +8,7 @@ declare var __ESM_BROWSER__: boolean
 declare var __NODE_JS__: boolean
 declare var __COMMIT__: string
 declare var __VERSION__: string
-declare var __COMPAT__: boolean
+declare var __COMPAT__: boolean // 兼容 vue2.x 标志
 
 // Feature flags
 declare var __FEATURE_OPTIONS_API__: boolean

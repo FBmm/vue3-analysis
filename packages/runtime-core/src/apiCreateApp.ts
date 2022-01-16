@@ -177,6 +177,9 @@ export function createAppAPI<HostElement>(
   render: RootRenderFunction,
   hydrate?: RootHydrateFunction
 ): CreateAppFunction<HostElement> {
+  /**
+   * uncertain：这里的 createApp 就是 Vue全局方法调用的 createApp ？
+   */
   return function createApp(rootComponent, rootProps = null) {
     if (rootProps != null && !isObject(rootProps)) {
       __DEV__ && warn(`root props passed to app.mount() must be an object.`)
@@ -278,7 +281,9 @@ export function createAppAPI<HostElement>(
         isHydrate?: boolean,
         isSVG?: boolean
       ): any {
+        // 不能多次调用 mounted
         if (!isMounted) {
+          // 创建新的vnode节点 在后面 render 方法中完成 diff 和渲染
           const vnode = createVNode(
             rootComponent as ConcreteComponent,
             rootProps
@@ -297,9 +302,9 @@ export function createAppAPI<HostElement>(
           if (isHydrate && hydrate) {
             hydrate(vnode as VNode<Node, Element>, rootContainer as any)
           } else {
-            render(vnode, rootContainer, isSVG)
+            render(vnode, rootContainer, isSVG) // 核心渲染 这里调用render方法进行diff和渲染
           }
-          isMounted = true
+          isMounted = true // 渲染完成
           app._container = rootContainer
           // for devtools and telemetry
           ;(rootContainer as any).__vue_app__ = app
@@ -308,7 +313,7 @@ export function createAppAPI<HostElement>(
             app._instance = vnode.component
             devtoolsInitApp(app, version)
           }
-
+          // mount 函数返回值 vnode component proxy
           return vnode.component!.proxy
         } else if (__DEV__) {
           warn(

@@ -7,6 +7,7 @@ export function patchClass(el: Element, value: string | null, isSVG: boolean) {
   // if this is an element during a transition, take the temporary transition
   // classes into account.
   const transitionClasses = (el as ElementWithTransition)._vtc
+  // Transition 组件样式 patch
   if (transitionClasses) {
     value = (
       value ? [value, ...transitionClasses] : [...transitionClasses]
