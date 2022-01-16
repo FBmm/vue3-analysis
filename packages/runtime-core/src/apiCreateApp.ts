@@ -149,11 +149,13 @@ export function createAppContext(): AppContext {
     app: null as any,
     config: {
       isNativeTag: NO,
+      // 设置为 true 以在浏览器开发工具的 performance/timeline 面板中启用对组件初始化、编译、渲染和更新的性能追踪。
       performance: false,
       globalProperties: {},
       optionMergeStrategies: {},
       errorHandler: undefined,
       warnHandler: undefined,
+      // 运行时编译器的选项
       compilerOptions: {}
     },
     mixins: [],
@@ -191,6 +193,7 @@ export function createAppAPI<HostElement>(
 
     let isMounted = false
 
+    // 创建 app 并且初始化 context.app
     const app: App = (context.app = {
       _uid: uid++,
       _component: rootComponent as ConcreteComponent,
@@ -201,10 +204,12 @@ export function createAppAPI<HostElement>(
 
       version,
 
+      // 拦截应用配置 app.config 取值操作 返回 context.config 数据
       get config() {
         return context.config
       },
 
+      // 禁止 app.config 赋值，无法通过 app.config.xxx = xxx 修改 vue 应用配置
       set config(v) {
         if (__DEV__) {
           warn(

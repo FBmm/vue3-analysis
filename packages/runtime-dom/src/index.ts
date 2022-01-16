@@ -33,13 +33,15 @@ const rendererOptions = extend({ patchProp }, nodeOps)
 
 // lazy create the renderer - this makes core renderer logic tree-shakable
 // in case the user only imports reactivity utilities from Vue.
+// render 函数和 createApp 方法保存在这个对象
 let renderer: Renderer<Element | ShadowRoot> | HydrationRenderer
 
+// ssr 相关属性
 let enabledHydration = false
 
 /**
  * 初始化 renderer
- * 只初始化一次
+ * 创建多个 vue app 只初始化一次
  */
 function ensureRenderer() {
   return (

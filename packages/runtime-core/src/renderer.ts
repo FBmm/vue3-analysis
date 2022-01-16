@@ -93,6 +93,7 @@ export interface Renderer<HostElement = RendererElement> {
   createApp: CreateAppFunction<HostElement>
 }
 
+// ssr renderer
 export interface HydrationRenderer extends Renderer<Element | ShadowRoot> {
   hydrate: RootHydrateFunction
 }
@@ -306,6 +307,7 @@ export function createRenderer<
   HostNode = RendererNode,
   HostElement = RendererElement
 >(options: RendererOptions<HostNode, HostElement>) {
+  // 这里为什么要重新封装一次 我猜测是为了声明 baseCreateRenderer 的两种重载方法并实现
   return baseCreateRenderer<HostNode, HostElement>(options)
 }
 
