@@ -20,12 +20,12 @@ export const enum PatchFlags {
   /**
    * Indicates an element with dynamic textContent (children fast path)
    */
-  TEXT = 1,
+  TEXT = 1, // 标志动态文本节点
 
   /**
    * Indicates an element with dynamic class binding.
    */
-  CLASS = 1 << 1,
+  CLASS = 1 << 1, // 标志动态 class 节点
 
   /**
    * Indicates an element with dynamic style
@@ -35,7 +35,7 @@ export const enum PatchFlags {
    *   const style = { color: 'red' }
    *   render() { return e('div', { style }) }
    */
-  STYLE = 1 << 2,
+  STYLE = 1 << 2, // 标志动态 style 节点
 
   /**
    * Indicates an element that has non-class/style dynamic props.
@@ -44,20 +44,20 @@ export const enum PatchFlags {
    * array that contains the keys of the props that may change so the runtime
    * can diff them faster (without having to worry about removed props)
    */
-  PROPS = 1 << 3,
+  PROPS = 1 << 3, // 标志动态属性节点
 
   /**
    * Indicates an element with props with dynamic keys. When keys change, a full
    * diff is always needed to remove the old key. This flag is mutually
    * exclusive with CLASS, STYLE and PROPS.
    */
-  FULL_PROPS = 1 << 4,
+  FULL_PROPS = 1 << 4, // 动态 key 节点，key 改变时，需要进行完整的 diff 比较并且移除老vnode
 
   /**
    * Indicates an element with event listeners (which need to be attached
    * during hydration)
    */
-  HYDRATE_EVENTS = 1 << 5,
+  HYDRATE_EVENTS = 1 << 5, // 具有监听事件的节点
 
   /**
    * Indicates a fragment whose children order doesn't change.

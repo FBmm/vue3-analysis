@@ -40,10 +40,16 @@ let renderer: Renderer<Element | ShadowRoot> | HydrationRenderer
 let enabledHydration = false
 
 /**
- * 初始化 renderer
- * 创建多个 vue app 只初始化一次
+ * 初始化 renderer 对象
+ *  {
+ *    render, // render 函数
+ *    createApp // 创建 app 方法
+ *  }
+ *  创建多个 vue app 只初始化一次
+ *  判断 renderer 是否已初始化 否则调用 createRenderer，根据初始 rendererOptions 创建 renderer 对象
+ *  rendererOptions 则是包含平台相关的 dom操作api 和 dom属性 patch 方法
  */
-function ensureRenderer() {
+function ensureRenderer(): Renderer<Element | ShadowRoot> {
   return (
     renderer ||
     (renderer = createRenderer<Node, Element | ShadowRoot>(rendererOptions))

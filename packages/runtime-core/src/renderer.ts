@@ -294,6 +294,7 @@ export const queuePostRenderEffect = __FEATURE_SUSPENSE__
  * host environment. For example, for runtime-dom, HostNode would be the DOM
  * `Node` interface and HostElement would be the DOM `Element` interface.
  *
+ * 通用渲染器通过平台标准的类型转换
  * Custom renderers can pass in the platform specific types like this:
  *
  * ``` js
@@ -307,7 +308,7 @@ export function createRenderer<
   HostNode = RendererNode,
   HostElement = RendererElement
 >(options: RendererOptions<HostNode, HostElement>) {
-  // 这里为什么要重新封装一次 我猜测是为了声明 baseCreateRenderer 的两种重载方法并实现
+  // 这里为什么要重新封装一次 我猜测是为了声明 baseCreateRenderer 的两种重载方法和实现方法
   return baseCreateRenderer<HostNode, HostElement>(options)
 }
 
@@ -368,6 +369,7 @@ function baseCreateRenderer(
 
   // Note: functions inside this closure should use `const xxx = () => {}`
   // style in order to prevent being inlined by minifiers.
+  // diff patch 方法
   const patch: PatchFn = (
     n1,
     n2,
@@ -386,6 +388,7 @@ function baseCreateRenderer(
     // patching & not same type, unmount old tree
     if (n1 && !isSameVNodeType(n1, n2)) {
       anchor = getNextHostNode(n1)
+      // 如果节点类型且 key 不同，卸载老 vnode 节点
       unmount(n1, parentComponent, parentSuspense, true)
       n1 = null
     }
