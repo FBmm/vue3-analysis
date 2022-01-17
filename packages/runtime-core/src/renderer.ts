@@ -93,6 +93,7 @@ export interface Renderer<HostElement = RendererElement> {
   createApp: CreateAppFunction<HostElement>
 }
 
+// ssr renderer
 export interface HydrationRenderer extends Renderer<Element | ShadowRoot> {
   hydrate: RootHydrateFunction
 }
@@ -306,6 +307,7 @@ export function createRenderer<
   HostNode = RendererNode,
   HostElement = RendererElement
 >(options: RendererOptions<HostNode, HostElement>) {
+  // 这里为什么要重新封装一次 我猜测是为了声明 baseCreateRenderer 的两种重载方法并实现
   return baseCreateRenderer<HostNode, HostElement>(options)
 }
 
@@ -335,17 +337,19 @@ function baseCreateRenderer(
   options: RendererOptions,
   createHydrationFns?: typeof createHydrationFunctions
 ): any {
-  // compile-time feature flags check
+  // compile-time feature flags check 编译时功能标志检查
   if (__ESM_BUNDLER__ && !__TEST__) {
     initFeatureFlags()
   }
 
+  // devtools
   if (__DEV__ || __FEATURE_PROD_DEVTOOLS__) {
     const target = getGlobalThis()
     target.__VUE__ = true
     setDevtoolsHook(target.__VUE_DEVTOOLS_GLOBAL_HOOK__)
   }
 
+  // dom 操作 api
   const {
     insert: hostInsert,
     remove: hostRemove,
@@ -2310,6 +2314,13 @@ function baseCreateRenderer(
     return hostNextSibling((vnode.anchor || vnode.el)!)
   }
 
+  /**
+   * render 方法是在这里创建的 -> render 方法调用后完成虚拟dom渲染（diff -> 一次性更改dom）
+   * container._vnode 是老的虚拟节点
+   * @param vnode 新的虚拟节点
+   * @param container 当前容器
+   * @param isSVG
+   */
   const render: RootRenderFunction = (vnode, container, isSVG) => {
     if (vnode == null) {
       if (container._vnode) {

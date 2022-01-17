@@ -161,7 +161,9 @@ export const toNumber = (val: any): any => {
   const n = parseFloat(val)
   return isNaN(n) ? val : n
 }
-
+/**
+ * _globalThis 全局对象兼容性写法
+ */
 let _globalThis: any
 export const getGlobalThis = (): any => {
   return (
@@ -170,11 +172,11 @@ export const getGlobalThis = (): any => {
       typeof globalThis !== 'undefined'
         ? globalThis
         : typeof self !== 'undefined'
-        ? self
+        ? self // web workers
         : typeof window !== 'undefined'
-        ? window
+        ? window // browser
         : typeof global !== 'undefined'
-        ? global
+        ? global // nodejs
         : {})
   )
 }

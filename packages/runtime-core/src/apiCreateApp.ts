@@ -149,11 +149,13 @@ export function createAppContext(): AppContext {
     app: null as any,
     config: {
       isNativeTag: NO,
+      // 设置为 true 以在浏览器开发工具的 performance/timeline 面板中启用对组件初始化、编译、渲染和更新的性能追踪。
       performance: false,
       globalProperties: {},
       optionMergeStrategies: {},
       errorHandler: undefined,
       warnHandler: undefined,
+      // 运行时编译器的选项
       compilerOptions: {}
     },
     mixins: [],
@@ -177,6 +179,9 @@ export function createAppAPI<HostElement>(
   render: RootRenderFunction,
   hydrate?: RootHydrateFunction
 ): CreateAppFunction<HostElement> {
+  /**
+   * uncertain：这里的 createApp 就是 Vue全局方法调用的 createApp ？
+   */
   return function createApp(rootComponent, rootProps = null) {
     if (rootProps != null && !isObject(rootProps)) {
       __DEV__ && warn(`root props passed to app.mount() must be an object.`)
@@ -188,6 +193,7 @@ export function createAppAPI<HostElement>(
 
     let isMounted = false
 
+    // 创建 app 并且初始化 context.app
     const app: App = (context.app = {
       _uid: uid++,
       _component: rootComponent as ConcreteComponent,
@@ -198,10 +204,12 @@ export function createAppAPI<HostElement>(
 
       version,
 
+      // 拦截应用配置 app.config 取值操作 返回 context.config 数据
       get config() {
         return context.config
       },
 
+      // 禁止 app.config 赋值，无法通过 app.config.xxx = xxx 修改 vue 应用配置
       set config(v) {
         if (__DEV__) {
           warn(
@@ -278,7 +286,9 @@ export function createAppAPI<HostElement>(
         isHydrate?: boolean,
         isSVG?: boolean
       ): any {
+        // 不能多次调用 mounted
         if (!isMounted) {
+          // 创建新的vnode节点 在后面 render 方法中完成 diff 和渲染
           const vnode = createVNode(
             rootComponent as ConcreteComponent,
             rootProps
@@ -297,9 +307,9 @@ export function createAppAPI<HostElement>(
           if (isHydrate && hydrate) {
             hydrate(vnode as VNode<Node, Element>, rootContainer as any)
           } else {
-            render(vnode, rootContainer, isSVG)
+            render(vnode, rootContainer, isSVG) // 核心渲染 这里调用render方法进行diff和渲染
           }
-          isMounted = true
+          isMounted = true // 渲染完成
           app._container = rootContainer
           // for devtools and telemetry
           ;(rootContainer as any).__vue_app__ = app
@@ -308,7 +318,7 @@ export function createAppAPI<HostElement>(
             app._instance = vnode.component
             devtoolsInitApp(app, version)
           }
-
+          // mount 函数返回值 vnode component proxy
           return vnode.component!.proxy
         } else if (__DEV__) {
           warn(
