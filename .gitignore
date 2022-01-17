@@ -1,4 +1,5 @@
 dist
+test
 .DS_Store
 .idea
 node_modules

@@ -401,11 +401,11 @@ function createBaseVNode(
   needFullChildrenNormalization = false
 ) {
   const vnode = {
-    __v_isVNode: true,
+    __v_isVNode: true, // 判断对象是不是vnode节点
     __v_skip: true,
     type,
     props,
-    key: props && normalizeKey(props),
+    key: props && normalizeKey(props), // 取 props.key || null
     ref: props && normalizeRef(props),
     scopeId: currentScopeId,
     slotScopeIds: null,
@@ -482,7 +482,7 @@ export const createVNode = (
 ) as typeof _createVNode
 
 /**
- * VNode 生成函数
+ * 生成VNode的外层函数
  * @param type
  * @param props
  * @param children
