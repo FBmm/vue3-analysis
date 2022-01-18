@@ -175,12 +175,13 @@ export type CreateAppFunction<HostElement> = (
 
 let uid = 0
 
+// vue createApp api
 export function createAppAPI<HostElement>(
   render: RootRenderFunction,
   hydrate?: RootHydrateFunction
 ): CreateAppFunction<HostElement> {
   /**
-   * uncertain：这里的 createApp 就是 Vue全局方法调用的 createApp ？
+   * Vue全局方法调用的 createApp 就是这个函数
    */
   return function createApp(rootComponent, rootProps = null) {
     if (rootProps != null && !isObject(rootProps)) {
@@ -253,12 +254,15 @@ export function createAppAPI<HostElement>(
       },
 
       component(name: string, component?: Component): any {
+        // 内置或保留组件名检测
         if (__DEV__) {
           validateComponentName(name, context.config)
         }
+        // 查询组件
         if (!component) {
           return context.components[name]
         }
+        // 已存在组件检测
         if (__DEV__ && context.components[name]) {
           warn(`Component "${name}" has already been registered in target app.`)
         }
@@ -267,6 +271,7 @@ export function createAppAPI<HostElement>(
       },
 
       directive(name: string, directive?: Directive) {
+        // 内置指令检测
         if (__DEV__) {
           validateDirectiveName(name)
         }
@@ -331,6 +336,7 @@ export function createAppAPI<HostElement>(
       },
 
       unmount() {
+        // 禁止卸载未渲染完成的组件
         if (isMounted) {
           render(null, app._container)
           if (__DEV__ || __FEATURE_PROD_DEVTOOLS__) {

@@ -551,6 +551,7 @@ export const unsetCurrentInstance = () => {
   currentInstance = null
 }
 
+// 内置标签
 const isBuiltInTag = /*#__PURE__*/ makeMap('slot,component')
 
 export function validateComponentName(name: string, config: AppConfig) {
