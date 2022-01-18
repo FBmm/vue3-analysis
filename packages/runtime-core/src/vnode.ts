@@ -345,6 +345,7 @@ export function isSameVNodeType(n1: VNode, n2: VNode): boolean {
     // HMR only: if the component has been hot-updated, force a reload.
     return false
   }
+  // 这里判断节点 key
   return n1.type === n2.type && n1.key === n2.key
 }
 
@@ -401,11 +402,11 @@ function createBaseVNode(
   needFullChildrenNormalization = false
 ) {
   const vnode = {
-    __v_isVNode: true,
+    __v_isVNode: true, // 判断对象是不是vnode节点
     __v_skip: true,
     type,
     props,
-    key: props && normalizeKey(props),
+    key: props && normalizeKey(props), // 取 props.key || null
     ref: props && normalizeRef(props),
     scopeId: currentScopeId,
     slotScopeIds: null,
@@ -482,7 +483,7 @@ export const createVNode = (
 ) as typeof _createVNode
 
 /**
- * VNode 生成函数
+ * 生成VNode的外层函数
  * @param type
  * @param props
  * @param children
