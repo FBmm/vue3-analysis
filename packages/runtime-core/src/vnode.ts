@@ -482,6 +482,7 @@ export const createVNode = (
   __DEV__ ? createVNodeWithArgsTransform : _createVNode
 ) as typeof _createVNode
 
+// @ts-ignore
 /**
  * 生成VNode的外层函数
  * @param type
@@ -547,6 +548,7 @@ function _createVNode(
   }
 
   // encode the vnode type information into a bitmap
+  // 根据 vnode type 初始化 vnode shapeFlag，这个会作为 diff 算法性能优化的标志
   const shapeFlag = isString(type)
     ? ShapeFlags.ELEMENT
     : __FEATURE_SUSPENSE__ && isSuspense(type)
@@ -558,8 +560,34 @@ function _createVNode(
     : isFunction(type)
     ? ShapeFlags.FUNCTIONAL_COMPONENT
     : 0
-
+  /**
+   * shapeFlag & ShapeFlags.STATEFUL_COMPONENT
+   * &: 按位与(两位同时为1，结果才为1，否则结果为0)
+   * 0000000001 = 1
+   * 0000000110 = 6
+   * -------------
+   * 0000000000 = 1
+   *
+   * 0000000010 = 2
+   * 0000000110 = 6
+   * -------------
+   * 0000000010 = 2
+   *
+   *
+   * |: 按位或(参加运算的两位只要有一个为1，其值为1)
+   * 00000100 = 4
+   * 00000010 = 2
+   * --------------
+   * 00000110 = 6
+   *
+   *
+   * 因为 ShapeFlags.STATEFUL_COMPONENT = 4 | 2 = 6
+   * 所以 shapeFlag > 1 时，shapeFlag & ShapeFlags.STATEFUL_COMPONENT （0 & 6 或 1 & 6 = 0） 不等于 0
+   * 因为 ShapeFlags.ELEMENT = 1，所以下面判断在 dev环境、 vnode 不是 ELEMENT、type 是 proxy 时才会执行
+   *
+   */
   if (__DEV__ && shapeFlag & ShapeFlags.STATEFUL_COMPONENT && isProxy(type)) {
+    // 递归找到非 ELEMENT proxy 类型节点的原始 type 替换 type
     type = toRaw(type)
     warn(
       `Vue received a Component which was made a reactive object. This can ` +
