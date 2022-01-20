@@ -214,6 +214,12 @@ export interface VNode<
 // can divide a template into nested blocks, and within each block the node
 // structure would be stable. This allows us to skip most children diffing
 // and only worry about the dynamic nodes (indicated by patch flags).
+// 因为 v-if 和 v-for 是两种可能动态改变 node 结构的方式，一旦我们把每个 v-if 分支代码的和每个 v-for 片段代码
+// 理解为是一个 block(代码块)，我们可以把模版分为嵌套的代码块，在每一个代码块中，node 结构将是稳定的。这样我们就可以
+// 跳过大部分子节点的 diff 并且仅仅只需要关心动态节点（动态节点由 patchFlag 标志）。
+
+// 所以，block 的概念就是 vue3 中为了性能优化而划分的代码块，主要是为了优化 diff 算法的性能
+// 在 diff 时，一个代码块中，只会对带有 patchFlag 标志的 node 进行 diff，减少对如静态节点 diff 性能的损耗从而提升 diff 性能
 export const blockStack: (VNode[] | null)[] = []
 export let currentBlock: VNode[] | null = null
 
