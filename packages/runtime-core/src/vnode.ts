@@ -402,7 +402,7 @@ function createBaseVNode(
   needFullChildrenNormalization = false
 ) {
   const vnode = {
-    __v_isVNode: true, // 判断对象是不是vnode节点
+    __v_isVNode: true, // vnode 标志
     __v_skip: true,
     type,
     props,
@@ -430,6 +430,7 @@ function createBaseVNode(
   } as VNode
 
   if (needFullChildrenNormalization) {
+    // 根据 children 类型，设置 vnode.shapeFlag
     normalizeChildren(vnode, children)
     // normalize suspense children
     if (__FEATURE_SUSPENSE__ && shapeFlag & ShapeFlags.SUSPENSE) {
@@ -817,6 +818,7 @@ export function normalizeChildren(vnode: VNode, children: unknown) {
     }
   }
   vnode.children = children as VNodeNormalizedChildren
+  // vnode.shapeFlag = vnode.shapeFlag | type
   vnode.shapeFlag |= type
 }
 
