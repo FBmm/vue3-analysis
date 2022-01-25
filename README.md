@@ -21,3 +21,12 @@ This is the repository for Vue 3.0 analysis.
     |-- vue
     |-- vue-compat        // vue2.x 兼容
 ```
+
+## 核心源码路径
+
+runtime 相关
+- [dom app - dom渲染器 renderer、ssr renderer 对象创建，createApp 方法实现](packages/runtime-dom/src/index.ts)
+- [render、patch - 渲染器 renderer 工厂函数实现、初始化 render 函数、初始化 patch 方法](packages/runtime-core/src/renderer.ts)
+- [vnode - VNode 类型声明、vnode 对象创建、block 优化等](packages/runtime-core/src/vnode.ts)
+- [h函数实现](packages/runtime-core/src/h.ts)
+
