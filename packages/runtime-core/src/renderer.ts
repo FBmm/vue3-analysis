@@ -308,7 +308,8 @@ export function createRenderer<
   HostNode = RendererNode,
   HostElement = RendererElement
 >(options: RendererOptions<HostNode, HostElement>) {
-  // 这里为什么要重新封装一次 我猜测是为了声明 baseCreateRenderer 的两种重载方法和实现方法
+  // 这里为什么要重新封装一次？createRenderer 声明返回非 ssr renderer创建函数、和 createHydrationRenderer （ssr renderer）区分 （参数不同）
+  // 具体实现实在 baseCreateRenderer 方法中，根据 createHydrationFns 参数创建 ssr renderer
   return baseCreateRenderer<HostNode, HostElement>(options)
 }
 
@@ -322,18 +323,21 @@ export function createHydrationRenderer(
 }
 
 // overload 1: no hydration
+// 只有 options 参数
 function baseCreateRenderer<
   HostNode = RendererNode,
   HostElement = RendererElement
 >(options: RendererOptions<HostNode, HostElement>): Renderer<HostElement>
 
 // overload 2: with hydration
+// 有 createHydrationFns 参数
 function baseCreateRenderer(
   options: RendererOptions<Node, Element>,
   createHydrationFns: typeof createHydrationFunctions
 ): HydrationRenderer
 
 // implementation
+// renderer 渲染器对象的核心实现函数
 function baseCreateRenderer(
   options: RendererOptions,
   createHydrationFns?: typeof createHydrationFunctions
@@ -2349,6 +2353,7 @@ function baseCreateRenderer(
     o: options
   }
 
+  // ssr 渲染相关属性
   let hydrate: ReturnType<typeof createHydrationFunctions>[0] | undefined
   let hydrateNode: ReturnType<typeof createHydrationFunctions>[1] | undefined
   if (createHydrationFns) {

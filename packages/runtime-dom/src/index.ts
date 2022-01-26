@@ -26,14 +26,14 @@ declare module '@vue/reactivity' {
 
 /**
  * createRenderer 函数参数
- * 1. nodeOps 跟平台有关的dom操作
+ * 1. nodeOps dom操作
  * 2. patchProp el 不同属性 patch 的实现方法
  */
 const rendererOptions = extend({ patchProp }, nodeOps)
 
 // lazy create the renderer - this makes core renderer logic tree-shakable
 // in case the user only imports reactivity utilities from Vue.
-// render 函数和 createApp 方法保存在这个对象
+// 初始化后的 render 函数和 createApp 方法保存在这个对象
 let renderer: Renderer<Element | ShadowRoot> | HydrationRenderer
 
 // ssr 相关属性
@@ -56,6 +56,7 @@ function ensureRenderer(): Renderer<Element | ShadowRoot> {
   )
 }
 
+// 初始化 ssr renderer
 function ensureHydrationRenderer() {
   renderer = enabledHydration
     ? renderer
@@ -128,6 +129,7 @@ export const createApp = ((...args) => {
   return app
 }) as CreateAppFunction<Element>
 
+// 创建服务端渲染应用
 export const createSSRApp = ((...args) => {
   const app = ensureHydrationRenderer().createApp(...args)
 

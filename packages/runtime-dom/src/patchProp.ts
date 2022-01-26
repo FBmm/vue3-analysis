@@ -11,7 +11,7 @@ const nativeOnRE = /^on[a-z]/
 type DOMRendererOptions = RendererOptions<Node, Element>
 
 /**
- * 针对不同属性提供 patch 操作
+ * 针对不同dom元素属性提供 patch 操作
  * patch 的过程是直接操作 el 的相关属性
  * @param el
  * @param key
