@@ -181,17 +181,23 @@ export function createAppAPI<HostElement>(
   hydrate?: RootHydrateFunction
 ): CreateAppFunction<HostElement> {
   /**
-   * Vue全局方法调用的 createApp 就是这个函数
+   * Vue app 实例就是这个函数创建的
+   * 这个方法的参数就是 Vue 全局 api createApp 的参数
    */
   return function createApp(rootComponent, rootProps = null) {
+    // 判断 rootProps 是不是对象类型
     if (rootProps != null && !isObject(rootProps)) {
       __DEV__ && warn(`root props passed to app.mount() must be an object.`)
       rootProps = null
     }
 
+    // vue 实例的上下文对象
     const context = createAppContext()
+
+    // 缓存已安装的 vue 插件
     const installedPlugins = new Set()
 
+    // mounted 标志
     let isMounted = false
 
     // 创建 app 并且初始化 context.app
@@ -219,32 +225,35 @@ export function createAppAPI<HostElement>(
         }
       },
 
+      // 注册插件
       use(plugin: Plugin, ...options: any[]) {
-        if (installedPlugins.has(plugin)) {
-          __DEV__ && warn(`Plugin has already been applied to target app.`)
-        } else if (plugin && isFunction(plugin.install)) {
+        if (installedPlugins.has(plugin)) { // 同一个插件上多次调用此方法时，该插件将仅安装一次
+          __DEV__ && warn(`Plugin has already been applied to target app.`) // dev 环境警告
+        } else if (plugin && isFunction(plugin.install)) { // 插件是对象，暴露 install 方法的情况
           installedPlugins.add(plugin)
           plugin.install(app, ...options)
-        } else if (isFunction(plugin)) {
+        } else if (isFunction(plugin)) { // 插件本身是一个函数，则它将被视为 install 方法
           installedPlugins.add(plugin)
           plugin(app, ...options)
-        } else if (__DEV__) {
+        } else if (__DEV__) { // dev 环境插件没有 install 方法警告
           warn(
             `A plugin must either be a function or an object with an "install" ` +
-              `function.`
+            `function.`
           )
         }
         return app
       },
 
+      // mixin
       mixin(mixin: ComponentOptions) {
         if (__FEATURE_OPTIONS_API__) {
+          // vue 应用的 mixin 会已数组的形式保存在上下文环境
           if (!context.mixins.includes(mixin)) {
             context.mixins.push(mixin)
           } else if (__DEV__) {
             warn(
               'Mixin has already been applied to target app' +
-                (mixin.name ? `: ${mixin.name}` : '')
+              (mixin.name ? `: ${mixin.name}` : '')
             )
           }
         } else if (__DEV__) {
@@ -252,24 +261,26 @@ export function createAppAPI<HostElement>(
         }
         return app
       },
-
+      // 注册组件
       component(name: string, component?: Component): any {
-        // 内置或保留组件名检测
+        // dev 环境内置或保留组件名检测
         if (__DEV__) {
           validateComponentName(name, context.config)
         }
-        // 查询组件
+        // 如果不传 component 组件参数，返回已注册的组件定义
         if (!component) {
           return context.components[name]
         }
-        // 已存在组件检测
+        // 已注册组件检测
         if (__DEV__ && context.components[name]) {
           warn(`Component "${name}" has already been registered in target app.`)
         }
+        // vue 应用注册新组件
         context.components[name] = component
         return app
       },
 
+      // 注册 app 指令，流程跟组件注册类似
       directive(name: string, directive?: Directive) {
         // 内置指令检测
         if (__DEV__) {
@@ -328,9 +339,9 @@ export function createAppAPI<HostElement>(
         } else if (__DEV__) {
           warn(
             `App has already been mounted.\n` +
-              `If you want to remount the same app, move your app creation logic ` +
-              `into a factory function and create fresh app instances for each ` +
-              `mount - e.g. \`const createMyApp = () => createApp(App)\``
+            `If you want to remount the same app, move your app creation logic ` +
+            `into a factory function and create fresh app instances for each ` +
+            `mount - e.g. \`const createMyApp = () => createApp(App)\``
           )
         }
       },
@@ -353,7 +364,7 @@ export function createAppAPI<HostElement>(
         if (__DEV__ && (key as string | symbol) in context.provides) {
           warn(
             `App already provides property with key "${String(key)}". ` +
-              `It will be overwritten with the new value.`
+            `It will be overwritten with the new value.`
           )
         }
         // TypeScript doesn't allow symbols as index type
