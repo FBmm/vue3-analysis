@@ -25,7 +25,7 @@ This is the repository for Vue 3.0 analysis.
 
 - [createApp 流程](docs/createApp流程.md)
 
-## 核心源码路径
+## 注释分析的核心源码
 
 **runtime 相关**
 - [dom app - dom渲染器 renderer、ssr renderer 对象创建，createApp 方法实现](packages/runtime-dom/src/index.ts)
