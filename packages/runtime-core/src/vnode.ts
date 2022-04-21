@@ -511,7 +511,7 @@ function _createVNode(
     if (__DEV__ && !type) {
       warn(`Invalid vnode type when creating vnode: ${type}.`)
     }
-    type = Comment // type为空或者空的动态组件（v-if=false组件）当作注释节点处理，所以就明白了v-if=false的组件是<!---->的原因
+    type = Comment // type为空或者空的动态组件（v-if=false组件）当作注释节点处理，所以就明白了在dev环境v-if=false的组件是<!---->的原因
   }
 
   // 如果组件类型是VNode

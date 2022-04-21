@@ -2337,6 +2337,7 @@ function baseCreateRenderer(
       patch(container._vnode || null, vnode, container, null, null, null, isSVG)
     }
     flushPostFlushCbs()
+    // vnode 保存在 container Element
     container._vnode = vnode
   }
 
