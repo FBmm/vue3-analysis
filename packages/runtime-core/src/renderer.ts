@@ -375,8 +375,8 @@ function baseCreateRenderer(
   // style in order to prevent being inlined by minifiers.
   // diff patch 方法
   const patch: PatchFn = (
-    n1,
-    n2,
+    n1, // old vnode
+    n2, // new vnode
     container,
     anchor = null,
     parentComponent = null,
@@ -402,7 +402,7 @@ function baseCreateRenderer(
       n2.dynamicChildren = null
     }
 
-    const { type, ref, shapeFlag } = n2
+    const { type, ref, shapeFlag } = n2 // new vnode
     switch (type) {
       case Text:
         processText(n1, n2, container, anchor)
@@ -492,6 +492,7 @@ function baseCreateRenderer(
     }
   }
 
+  // 处理文本节点
   const processText: ProcessTextOrCommentFn = (n1, n2, container, anchor) => {
     if (n1 == null) {
       hostInsert(
@@ -502,11 +503,12 @@ function baseCreateRenderer(
     } else {
       const el = (n2.el = n1.el!)
       if (n2.children !== n1.children) {
-        hostSetText(el, n2.children as string)
+        hostSetText(el, n2.children as string) // TextNode 节点不变 设置新 nodeValue
       }
     }
   }
 
+  // 处理注释节点
   const processCommentNode: ProcessTextOrCommentFn = (
     n1,
     n2,
@@ -2329,11 +2331,12 @@ function baseCreateRenderer(
    * @param isSVG
    */
   const render: RootRenderFunction = (vnode, container, isSVG) => {
+    // 卸载 vnode
     if (vnode == null) {
       if (container._vnode) {
         unmount(container._vnode, null, null, true)
       }
-    } else {
+    } else { // 挂载 vnode 时 patch
       patch(container._vnode || null, vnode, container, null, null, null, isSVG)
     }
     flushPostFlushCbs()
