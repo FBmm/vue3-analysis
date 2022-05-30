@@ -25,6 +25,12 @@ export const createDep = (effects?: ReactiveEffect[]): Dep => {
   return dep
 }
 
+/**
+ * dep.w(1 3 5 7 ...) & trackOpBit = 1
+ * dep.w = 1 表示已经被追踪状态
+ * dep.n = 1 表示新追踪状态
+ * @param dep
+ */
 export const wasTracked = (dep: Dep): boolean => (dep.w & trackOpBit) > 0
 
 export const newTracked = (dep: Dep): boolean => (dep.n & trackOpBit) > 0
